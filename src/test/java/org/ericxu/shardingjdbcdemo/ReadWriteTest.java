@@ -18,7 +18,7 @@ public class ReadWriteTest {
     @Test
     public void testInsert() {
         User user = new User();
-        user.setUname("张三丰");
+        user.setUname("王德发");
         userMapper.insert(user);
     }
 
