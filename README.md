@@ -1,4 +1,4 @@
 # 工程简介
 
-SharingSphere JDBC Demo
+ShardingSphere JDBC Demo
 
