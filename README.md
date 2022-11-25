@@ -1,4 +1,4 @@
 # 工程简介
 
-ShardingSphere JDBC Demo
+ShardingSphere Jdbc And Proxy Sample
 
