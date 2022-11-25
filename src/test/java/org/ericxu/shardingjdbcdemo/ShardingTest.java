@@ -2,7 +2,10 @@ package org.ericxu.shardingjdbcdemo;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.ericxu.shardingjdbcdemo.entity.Order;
+import org.ericxu.shardingjdbcdemo.entity.OrderItem;
+import org.ericxu.shardingjdbcdemo.entity.OrderVo;
 import org.ericxu.shardingjdbcdemo.entity.User;
+import org.ericxu.shardingjdbcdemo.mapper.OrderItemMapper;
 import org.ericxu.shardingjdbcdemo.mapper.OrderMapper;
 import org.ericxu.shardingjdbcdemo.mapper.UserMapper;
 import org.junit.jupiter.api.Test;
@@ -20,6 +23,9 @@ public class ShardingTest {
 
     @Autowired
     private OrderMapper orderMapper;
+
+    @Autowired
+    private OrderItemMapper orderItemMapper;
 
     /**
      * 垂直分片：插入数据测试
@@ -140,5 +146,57 @@ public class ShardingTest {
         orderQueryWrapper.eq("user_id", 1L);
         List<Order> orders = orderMapper.selectList(orderQueryWrapper);
         orders.forEach(System.out::println);
+    }
+
+    /**
+     * 测试关联表插入
+     */
+    @Test
+    public void testInsertOrderAndOrderItem(){
+
+        for (long i = 1; i < 3; i++) {
+
+            Order order = new Order();
+            order.setOrderNo("ShardingSphere" + i);
+            order.setUserId(1L);
+            orderMapper.insert(order);
+
+            for (long j = 1; j < 3; j++) {
+                OrderItem orderItem = new OrderItem();
+                orderItem.setOrderNo("ShardingSphere" + i);
+                orderItem.setUserId(1L);
+                orderItem.setPrice(new BigDecimal(10));
+                orderItem.setCount(2);
+                orderItemMapper.insert(orderItem);
+            }
+        }
+
+        for (long i = 5; i < 7; i++) {
+
+            Order order = new Order();
+            order.setOrderNo("ShardingSphere" + i);
+            order.setUserId(2L);
+            orderMapper.insert(order);
+
+            for (long j = 1; j < 3; j++) {
+                OrderItem orderItem = new OrderItem();
+                orderItem.setOrderNo("ShardingSphere" + i);
+                orderItem.setUserId(2L);
+                orderItem.setPrice(new BigDecimal(1));
+                orderItem.setCount(3);
+                orderItemMapper.insert(orderItem);
+            }
+        }
+
+    }
+
+    /**
+     * 测试关联表查询
+     */
+    @Test
+    public void testGetOrderAmount(){
+
+        List<OrderVo> orderAmountList = orderMapper.getOrderAmount();
+        orderAmountList.forEach(System.out::println);
     }
 }
