@@ -1,10 +1,8 @@
 package org.ericxu.shardingjdbcdemo;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.ericxu.shardingjdbcdemo.entity.Order;
-import org.ericxu.shardingjdbcdemo.entity.OrderItem;
-import org.ericxu.shardingjdbcdemo.entity.OrderVo;
-import org.ericxu.shardingjdbcdemo.entity.User;
+import org.ericxu.shardingjdbcdemo.entity.*;
+import org.ericxu.shardingjdbcdemo.mapper.DictMapper;
 import org.ericxu.shardingjdbcdemo.mapper.OrderItemMapper;
 import org.ericxu.shardingjdbcdemo.mapper.OrderMapper;
 import org.ericxu.shardingjdbcdemo.mapper.UserMapper;
@@ -26,6 +24,9 @@ public class ShardingTest {
 
     @Autowired
     private OrderItemMapper orderItemMapper;
+
+    @Autowired
+    private DictMapper dictMapper;
 
     /**
      * 垂直分片：插入数据测试
@@ -199,4 +200,27 @@ public class ShardingTest {
         List<OrderVo> orderAmountList = orderMapper.getOrderAmount();
         orderAmountList.forEach(System.out::println);
     }
+
+    /**
+     * 广播表：每个服务器中的t_dict同时添加了新数据
+     */
+    @Test
+    public void testBroadcast(){
+
+        Dict dict = new Dict();
+        dict.setDictType("type1");
+        dictMapper.insert(dict);
+    }
+
+    /**
+     * 查询操作，只从一个节点获取数据
+     * 随机负载均衡规则
+     */
+    @Test
+    public void testSelectBroadcast(){
+
+        List<Dict> dicts = dictMapper.selectList(null);
+        dicts.forEach(System.out::println);
+    }
+
 }
